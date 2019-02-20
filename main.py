@@ -28,8 +28,9 @@ for j in range(5000):
             minimumDistance = distance
     result.append(minimumIndex)
 
-finalResult = result == devLabel
-print("Taux d'images reconnues : ")
+finalResult = result != devLabel
+print("Taux d'images non reconnues : ")
+# Most beautiful thing ever
 print(finalResult[finalResult].size/finalResult.size)
 
 
