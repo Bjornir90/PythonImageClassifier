@@ -7,26 +7,28 @@ Y = np.load('images_et4/data/trn_lbl.npy')
 
 classe=[]
 moyenne=[]
-for i in range (9):
-    classe.append(X[Y==i])
+#barycentres
+for i in range(9):
+    classe.append(X[Y == i])
     moyenne.append(np.mean(classe[i], axis=0))
 
-plan=[]
-#hyperplans séparateurs
-for i in range(9):
-    for j in range(i,9):
-        vect= np.transpose(moyenne[j]-moyenne[i])
-        cste = vect*(-(moyenne[i]+moyenne[j])/2)
-        plan.append([vect,cste])
-
-print(plan[0])
-
 dev = np.load('images_et4/data/dev_img.npy')
+devLabel = np.load('images_et4/data/dev_lbl.npy')
 
 
-#afficher une image
-img = plan[3][1].reshape(28,28)
-plt.imshow(img, plt.cm.gray)
-plt.show()
+result = []
+for j in range(5000):
+    minimumDistance = 10000000
+    minimumIndex = 0
+    for i in range(9):
+        distance = np.linalg.norm(dev[j] - moyenne[i])
+        if distance < minimumDistance:
+            minimumIndex = i
+            minimumDistance = distance
+    result.append(minimumIndex)
+
+finalResult = result == devLabel
+print("Taux d'images reconnues : ")
+print(finalResult[finalResult].size/finalResult.size)
 
 
