@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.svm import LinearSVC
+from sklearn.neighbors import KNeighborsClassifier
 
 X = np.load('images_et4/data/trn_img.npy')
 Y = np.load('images_et4/data/trn_lbl.npy')
@@ -67,7 +68,8 @@ for k in values:
 pca = PCA(n_components=50)
 newX = pca.fit_transform(X)
 clf = LinearSVC(random_state=0, tol=0.1)
-print (clf.get_params())
+'''
+print(clf.get_params())
 clf.fit(newX, Y)
 
 newDev = pca.transform(dev)
@@ -79,4 +81,19 @@ finalResult = svmResult != devLabel
 print("Taux d'images non reconnues par le svm : ")
 # Most beautiful thing ever
 print(finalResult[finalResult].size/finalResult.size)
+'''
 
+
+
+neighbors = KNeighborsClassifier(n_neighbors=10)
+print("pouloulou")
+neighbors.fit(X, Y)
+print("pouloulou")
+
+neighborsResult = neighbors.predict(dev)
+print("pouloulou")
+finalResult = neighborsResult != devLabel
+
+print("Taux d'images non reconnues par le k-neighbors : ")
+# Most beautiful thing ever
+print(finalResult[finalResult].size/finalResult.size)
