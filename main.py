@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.decomposition import PCA
+from sklearn.svm import LinearSVC
 
 X = np.load('images_et4/data/trn_img.npy')
 Y = np.load('images_et4/data/trn_lbl.npy')
@@ -32,7 +33,7 @@ print("Taux d'images non reconnues : ")
 # Most beautiful thing ever
 print(finalResult[finalResult].size/finalResult.size)
 
-values = [10, 20, 50, 100, 250, 300, 350, 400, 500]
+'''values = [10, 20, 50, 100, 250, 300]
 for k in values:
     pca = PCA(n_components=k)
     pca.fit(X)
@@ -62,6 +63,20 @@ for k in values:
     print("Taux d'images non reconnues : ")
     # Most beautiful thing ever
     print(finalResult[finalResult].size/finalResult.size, "with nb components = ", k)
+'''
+pca = PCA(n_components=50)
+newX = pca.fit_transform(X)
+clf = LinearSVC(random_state=0, tol=0.1)
+print (clf.get_params())
+clf.fit(newX, Y)
 
+newDev = pca.transform(dev)
 
+svmResult = clf.predict(newDev)
+
+finalResult = svmResult != devLabel
+
+print("Taux d'images non reconnues par le svm : ")
+# Most beautiful thing ever
+print(finalResult[finalResult].size/finalResult.size)
 
