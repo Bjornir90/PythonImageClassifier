@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.svm import LinearSVC
+from sklearn.svm import NuSVC
 from sklearn.neighbors import KNeighborsClassifier
 
 X = np.load('images_et4/data/trn_img.npy')
@@ -67,8 +68,8 @@ for k in values:
 '''
 pca = PCA(n_components=50)
 newX = pca.fit_transform(X)
-clf = LinearSVC(random_state=0, tol=0.1)
-'''
+clf = LinearSVC(random_state=0, tol=100)
+
 print(clf.get_params())
 clf.fit(newX, Y)
 
@@ -76,15 +77,29 @@ newDev = pca.transform(dev)
 
 svmResult = clf.predict(newDev)
 
+svmTrainResult = clf.predict(newX)
+
 finalResult = svmResult != devLabel
+finalTrainResult = svmTrainResult != Y
 
 print("Taux d'images non reconnues par le svm : ")
 # Most beautiful thing ever
 print(finalResult[finalResult].size/finalResult.size)
+print("Taux d'erreurs sur l'ensemble de train : ")
+print(finalTrainResult[finalTrainResult].size/finalTrainResult.size)
+
+
+clNu = NuSVC(gamma='scale')
+
+clNu.fit(newX, Y)
+
+nuResult = clNu.predict(newDev)
+
+finalResult = nuResult != devLabel
+
+print("Taux d'image non reconnues par le svc nu : ")
+print(finalResult[finalResult].size/finalResult.size)
 '''
-
-
-
 neighbors = KNeighborsClassifier(n_neighbors=10)
 print("pouloulou")
 neighbors.fit(X, Y)
@@ -97,3 +112,4 @@ finalResult = neighborsResult != devLabel
 print("Taux d'images non reconnues par le k-neighbors : ")
 # Most beautiful thing ever
 print(finalResult[finalResult].size/finalResult.size)
+'''
