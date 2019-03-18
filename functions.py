@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.svm import LinearSVC
 from sklearn.svm import NuSVC
+from sklearn.metrics import confusion_matrix
 from sklearn.neighbors import KNeighborsClassifier
 
 
@@ -82,6 +83,8 @@ def pcatest(newX, y, newDev, devLabel, t):
     print(finalResult[finalResult].size/finalResult.size)
     print("Taux d'erreurs sur l'ensemble de train : ")
     print(finalTrainResult[finalTrainResult].size/finalTrainResult.size)
+    confMatrix = confusion_matrix(devLabel, svmResult)
+    print(confMatrix)
 
 
 def nu(newX, y, newDev, devLabel):
@@ -95,8 +98,8 @@ def nu(newX, y, newDev, devLabel):
 
     print("Taux d'image non reconnues par le svc nu : ")
     print(finalResult[finalResult].size/finalResult.size)
-
-
+    confMatrix = confusion_matrix(devLabel, nuResult)
+    print(confMatrix)
 
 
 
@@ -111,8 +114,9 @@ def main():
     devLabel = np.load('images_et4/data/dev_lbl.npy')
     newDev = pca.transform(dev)
     """barycentre(X, Y, dev, devLabel)"""
-    pcatest(X, Y, newDev, devLabel, 100)
-    """nu(newX, Y, newDev, devLabel)"""
+    #pcatest(newX, Y, newDev, devLabel, 100)
+    nu(newX, Y, newDev, devLabel)
+
 
 main()
 
