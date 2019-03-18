@@ -4,34 +4,36 @@ from sklearn.svm import LinearSVC
 from sklearn.svm import NuSVC
 from sklearn.neighbors import KNeighborsClassifier
 
+X = np.load('images_et4/data/trn_img.npy')
+Y = np.load('images_et4/data/trn_lbl.npy')
 
+classe=[]
+moyenne=[]
 
-def barycentre(x, y, dev, devLabel):
+#barycentres
+for i in range(10):
+    classe.append(X[Y == i])
+    moyenne.append(np.mean(classe[i], axis=0))
 
-    classe=[]
-    moyenne=[]
+dev = np.load('images_et4/data/dev_img.npy')
+devLabel = np.load('images_et4/data/dev_lbl.npy')
 
-    #barycentres
+result = []
+
+for j in range(5000):
+    minimumDistance = 10000000
+    minimumIndex = 0
     for i in range(10):
-        classe.append(x[y == i])
-        moyenne.append(np.mean(classe[i], axis=0))
+        distance = np.linalg.norm(dev[j] - moyenne[i])
+        if distance < minimumDistance:
+            minimumIndex = i
+            minimumDistance = distance
+    result.append(minimumIndex)
 
-    result = []
-
-    for j in range(5000):
-        minimumDistance = 10000000
-        minimumIndex = 0
-        for i in range(10):
-            distance = np.linalg.norm(dev[j] - moyenne[i])
-            if distance < minimumDistance:
-                minimumIndex = i
-                minimumDistance = distance
-        result.append(minimumIndex)
-
-    finalResult = result != devLabel
-    print("Taux d'images non reconnues : ")
-    # Most beautiful thing ever
-    print(finalResult[finalResult].size/finalResult.size)
+finalResult = result != devLabel
+print("Taux d'images non reconnues : ")
+# Most beautiful thing ever
+print(finalResult[finalResult].size/finalResult.size)
 
 '''values = [10, 20, 50, 100, 250, 300]
 for k in values:
@@ -64,59 +66,39 @@ for k in values:
     # Most beautiful thing ever
     print(finalResult[finalResult].size/finalResult.size, "with nb components = ", k)
 '''
+pca = PCA(n_components=75)
+newX = pca.fit_transform(X)
+newDev = pca.transform(dev)
 
+'''
+clf = LinearSVC(random_state=0, tol=100)
+print(clf.get_params())
+clf.fit(newX, Y)
 
-def pcatest(newX, y, newDev, devLabel, t):
+svmResult = clf.predict(newDev)
 
+svmTrainResult = clf.predict(newX)
 
-    clf = LinearSVC(random_state=0, tol=t)
-    print(clf.get_params())
-    clf.fit(newX, y)
-    svmResult = clf.predict(newDev)
-    svmTrainResult = clf.predict(newX)
-    finalResult = svmResult != devLabel
-    finalTrainResult = svmTrainResult != y
+finalResult = svmResult != devLabel
+finalTrainResult = svmTrainResult != Y
 
-    print("Taux d'images non reconnues par le svm : ")
-    # Most beautiful thing ever
-    print(finalResult[finalResult].size/finalResult.size)
-    print("Taux d'erreurs sur l'ensemble de train : ")
-    print(finalTrainResult[finalTrainResult].size/finalTrainResult.size)
+print("Taux d'images non reconnues par le svm : ")
+# Most beautiful thing ever
+print(finalResult[finalResult].size/finalResult.size)
+print("Taux d'erreurs sur l'ensemble de train : ")
+print(finalTrainResult[finalTrainResult].size/finalTrainResult.size)
+'''
 
+clNu = NuSVC(gamma='scale')
 
-def nu(newX, y, newDev, devLabel):
-    clNu = NuSVC(gamma='scale')
+clNu.fit(newX, Y)
 
-    clNu.fit(newX, y)
+nuResult = clNu.predict(newDev)
 
-    nuResult = clNu.predict(newDev)
+finalResult = nuResult != devLabel
 
-    finalResult = nuResult != devLabel
-
-    print("Taux d'image non reconnues par le svc nu : ")
-    print(finalResult[finalResult].size/finalResult.size)
-
-
-
-
-
-
-def main():
-    X = np.load('images_et4/data/trn_img.npy')
-    Y = np.load('images_et4/data/trn_lbl.npy')
-
-    pca = PCA(n_components=50)
-    newX = pca.fit_transform(X)
-    dev = np.load('images_et4/data/dev_img.npy')
-    devLabel = np.load('images_et4/data/dev_lbl.npy')
-    newDev = pca.transform(dev)
-    """barycentre(X, Y, dev, devLabel)"""
-    pcatest(X, Y, newDev, devLabel, 100)
-    """nu(newX, Y, newDev, devLabel)"""
-
-main()
-
-
+print("Taux d'image non reconnues par le svc nu : ")
+print(finalResult[finalResult].size/finalResult.size)
 '''
 neighbors = KNeighborsClassifier(n_neighbors=10)
 print("pouloulou")
