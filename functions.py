@@ -2,9 +2,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.svm import LinearSVC
 from sklearn.svm import NuSVC
-from sklearn.metrics import confusion_matrix
 from sklearn.neighbors import KNeighborsClassifier
-import matplotlib.pyplot as plt
 import time
 
 
@@ -32,9 +30,6 @@ def barycentre(x, y, dev, devLabel):
         result.append(minimumIndex)
 
     finalResult = result != devLabel
-    print("Taux d'images non reconnues : ")
-    # Most beautiful thing ever
-    print(finalResult[finalResult].size/finalResult.size)
 
 
 def svm(newX, y, newDev, devLabel, t):
@@ -48,13 +43,6 @@ def svm(newX, y, newDev, devLabel, t):
     finalResult = svmResult != devLabel
     finalTrainResult = svmTrainResult != y
 
-    print("Taux d'images non reconnues par le svm : ")
-    # Most beautiful thing ever
-    print(finalResult[finalResult].size/finalResult.size)
-    print("Taux d'erreurs sur l'ensemble de train : ")
-    print(finalTrainResult[finalTrainResult].size/finalTrainResult.size)
-    confMatrix = confusion_matrix(devLabel, svmResult)
-    print(confMatrix)
 
 
 def nu(newX, y, newDev, devLabel):
@@ -66,10 +54,6 @@ def nu(newX, y, newDev, devLabel):
 
     finalResult = nuResult != devLabel
 
-    print("Taux d'image non reconnues par le svc nu : ")
-    print(finalResult[finalResult].size/finalResult.size)
-    confMatrix = confusion_matrix(devLabel, nuResult)
-    print(confMatrix)
 
 def kneighbors(X, Y, dev, devLabel):
     neighbors = KNeighborsClassifier(n_neighbors=10)
@@ -79,7 +63,6 @@ def kneighbors(X, Y, dev, devLabel):
     finalResult = neighborsResult != devLabel
 
     print("Taux d'images non reconnues par le k-neighbors : ")
-    # Most beautiful thing ever
     print(finalResult[finalResult].size / finalResult.size)
 
 
@@ -90,25 +73,22 @@ def main():
     Y = np.load('images_et4/data/trn_lbl.npy')
     dev = np.load('images_et4/data/dev_img.npy')
     devLabel = np.load('images_et4/data/dev_lbl.npy')
-    timeList = []
-    dimensionList = []
 
-    for i in range(10, 311, 50):
-        pca = PCA(n_components=i)
-        newX = pca.fit_transform(X)
-        newDev = pca.transform(dev)
-        startTime = time.process_time()
-        #barycentre(newX, Y, newDev, devLabel)
-        #svm(newX, Y, newDev, devLabel, 100)
-        #nu(newX, Y, newDev, devLabel)
-        kneighbors(newX, Y, newDev, devLabel)
-        endTime = time.process_time()
-        dimensionList.append(i)
-        timeList.append(endTime-startTime)
-        print("Time to classify : ", endTime-startTime, "s with ", i, " dimensions")
+    print("Résultat sans PCA : ")
+    startTime = time.process_time()
+    kneighbors(X, Y, dev, devLabel)
+    endTime = time.process_time()
+    print("Exécuté en ", endTime-startTime)
 
-    plt.plot(dimensionList, timeList)
-    plt.show()
+    pca = PCA(n_components=163)
+    reducedX = pca.fit_transform(X)
+    reducedDev = pca.transform(dev)
+
+    print("Résultat avec PCA : ")
+    startTime = time.process_time()
+    kneighbors(reducedX, Y, reducedDev, devLabel)
+    endTime = time.process_time()
+    print("Exécuté en ", endTime - startTime, " Dimension 163")
 
 
 main()
