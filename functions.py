@@ -12,13 +12,14 @@ def barycentre(x, y, dev, devLabel):
     classe=[]
     moyenne=[]
 
-    #barycentres
+    # calculating barycentres
     for i in range(10):
         classe.append(x[y == i])
         moyenne.append(np.mean(classe[i], axis=0))
 
     result = []
 
+    #guessing result by calculating the closest barycentre for every datapoint
     for j in range(5000):
         minimumDistance = 10000000
         minimumIndex = 0
@@ -36,12 +37,11 @@ def svm(newX, y, newDev, devLabel, t):
 
 
     clf = LinearSVC(random_state=0, tol=t)
-    print(clf.get_params())
+
     clf.fit(newX, y)
+
     svmResult = clf.predict(newDev)
-    svmTrainResult = clf.predict(newX)
     finalResult = svmResult != devLabel
-    finalTrainResult = svmTrainResult != y
 
 
 
